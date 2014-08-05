@@ -22,11 +22,13 @@ function init() {
   renderer = new THREE.WebGLRenderer({antialias:true});
   renderer.setSize(WIDTH, HEIGHT);
   document.body.appendChild(renderer.domElement);
+  renderer.shadowMapEnabled = true;
 
    //Cube
-  var geometry = new THREE.CubeGeometry(100,100,100);
+  var geometry = new THREE.BoxGeometry(100,100,100);
   var material = new THREE.MeshLambertMaterial( { color: 0x00ff00} );
   cube = new THREE.Mesh( geometry, material );
+  cube.castShadow = true;
   scene.add(cube);
 
   //Set up perspective camera
@@ -34,10 +36,10 @@ function init() {
   //Second arg is aspect ratio-- width/height
   //Third arg is near
   //Fourth arg is far
-  camera = new THREE.PerspectiveCamera(45, WIDTH/HEIGHT, 0.1, 10000);
+  camera = new THREE.PerspectiveCamera(45, WIDTH/HEIGHT, 100, 10000);
   camera.position.y = 160;
   camera.position.z = 400;
-  camera.lookAt(cube.position);
+  
   scene.add(camera);
 
   //Event listener triggered by resizing the browser
@@ -53,8 +55,18 @@ function init() {
   var skyboxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
   var skyboxMaterial = new THREE.MeshBasicMaterial({ color: 0x99CCFF, side: THREE.BackSide });
   var skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
- 
   scene.add(skybox);
+
+  //Create a ground plane
+  var planeGeometry = new THREE.PlaneGeometry(200, 200);
+  var planeMaterial = new THREE.MeshLambertMaterial({color: 0Xffffff, side: THREE.DoubleSide});
+  var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  plane.position.x = -100;
+  plane.position.z = -100;
+  plane.position.y = 0;
+  plane.rotation.x=-0.5*Math.PI;
+  plane.recieveShadow = true;
+  scene.add(plane);
 
   //Set background color
   // renderer.setClearColor(0x333F47, 1);
