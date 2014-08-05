@@ -4,11 +4,11 @@
 //http://code.tutsplus.com/tutorials/webgl-with-threejs-basics--net-35688
 
 //Declare variables
-var scene, camera, renderer, cube, light;
+var scene, camera, renderer, cube, light, ambientLight;
 
 //Call functions
 init();
-render();
+animate();
 
 //Define the init function
 function init() {
@@ -41,40 +41,56 @@ function init() {
   scene.add(camera);
 
   //Event listener triggered by resizing the browser
+  window.addEventListener('resize', function(){
+    var WIDTH = window.innerWidth,
+        HEIGHT = window.innerHeight;
+    renderer.setSize(WIDTH, HEIGHT);
+    camera.aspect = WIDTH / HEIGHT;
+    camera.updateProjectionMatrix();
+  });
 
-
-  //Skybox
-  var skyboxGeometry = new THREE.CubeGeometry(10000, 10000, 10000);
-  var skyboxMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide });
+  //Skybox-- a large box in which my little cube lives
+  var skyboxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
+  var skyboxMaterial = new THREE.MeshBasicMaterial({ color: 0x99CCFF, side: THREE.BackSide });
   var skybox = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
  
   scene.add(skybox);
 
+  //Set background color
+  // renderer.setClearColor(0x333F47, 1);
+
   //Light
   
-  var light = new THREE.PointLight(0xffffff);
+  light = new THREE.PointLight(0xffffff);
   light.position.set(0, 300, 200);
- 
   scene.add(light);
+
+  //Ambient light
+
+  var ambientLight = new THREE.AmbientLight( 0x404040 ); // soft white light
+  scene.add(ambientLight);
+ 
+  
 
  
 
   //Controls
-  
-
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
 }
 
  // Renders the scene and updates the render as needed.
-function render() {
+function animate() {
 
   // Read more about requestAnimationFrame at http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
-  requestAnimationFrame(render);
+  requestAnimationFrame(animate);
 
   //
-  cube.rotation.x += 0.05;
-  cube.rotation.y += 0.05;
+  // cube.rotation.x += 0.05;
+  // cube.rotation.y += 0.05;
 
   // Render the scene.
   renderer.render(scene, camera);
+  controls.update();
+
 
 }
