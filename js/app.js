@@ -11,7 +11,7 @@ var labels = [{center:{x:580,y:320}, image:"images/yellow_belly.png", range: {x:
 
 //Call functions
 init();
-animate();
+// animate();
 
 //Define the init function
 function init() {
@@ -84,8 +84,8 @@ function init() {
       }
     });
 
-    object.position.y = - 80;
-    object.scale.set(20,20,20);
+    object.position.y = - 10;
+    object.scale.set(8,8,8);
     scene.add( object );
     camera.lookAt(object.position);
 
@@ -95,63 +95,97 @@ function init() {
   //Labels -- http://stemkoski.github.io/Three.js/Mouse-Tooltip.html
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
-  // create a canvas element
-  canvas1 = document.createElement('canvas');
-  context1 = canvas1.getContext('2d');
-  context1.font = "Bold 30px Arial";
-  context1.fillStyle = "rgba(0,0,0,0.95)";
-  context1.fillText('TWEET!', 0, 20);
+  //Sprite
+  var tweetTexture = THREE.ImageUtils.loadTexture( 'obj/tweet.png' );
+  var tweetMaterial = new THREE.SpriteMaterial({map: tweetTexture, useScreenCoordinates: true});
+  sprite1 = new THREE.Sprite(tweetMaterial);
+  sprite1.position.set (150, 75, 0);
+  sprite1.scale.set(50, 25, 0);
+  scene.add(sprite1);
+  // // create a canvas element
+  // canvas1 = document.createElement('canvas');
+  // context1 = canvas1.getContext('2d');
+  // context1.font = "Bold 30px Arial";
+  // context1.fillStyle = "rgba(0,0,0,0.95)";
+  // context1.fillText('TWEET!', 0, 20);
     
-  // canvas contents will be used for a texture
-  texture1 = new THREE.Texture(canvas1);
-  texture1.needsUpdate = true;
+  // // canvas contents will be used for a texture
+  // texture1 = new THREE.Texture(canvas1);
+  // texture1.needsUpdate = true;
 
-  var spriteMaterial = new THREE.SpriteMaterial( { map: texture1, useScreenCoordinates: true} );
+  // var spriteMaterial = new THREE.SpriteMaterial( { map: texture1, useScreenCoordinates: true} );
   
-  sprite1 = new THREE.Sprite( spriteMaterial );
-  sprite1.scale.set(200,100,1.0);
-  sprite1.position.set(250, 100, 0 );
-  scene.add( sprite1 );
+  // sprite1 = new THREE.Sprite( spriteMaterial );
+  // sprite1.scale.set(200,100,1.0);
+  // sprite1.position.set(250, 100, 0 );
+  // scene.add( sprite1 );
 
-  //Controls
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  // //Controls
+  // controls = new THREE.OrbitControls(camera, renderer.domElement);
 }
 
 function between(num, min, max){
   return num >= min && num <= max;
 }
 
-
 function onDocumentMouseMove(event){
-  mouse.x = event.clientX;
-  mouse.y = event.clientY;
-  console.log(mouse);
-  for(i=0; i<labels.length; i++){
-    minX = labels[i].center.x - labels[i].range.x;
-    minY = labels[i].center.y - labels[i].range.y;
-    maxX = labels[i].center.x + labels[i].range.x;
-    maxY = labels[i].center.y + labels[i].range.y;
-    if (between(mouse.x, minX, maxX) && between(mouse.y, minY, maxY)){
-      context1.fillStyle = "rgba(255,255,255,0.95)";
-      context1.fillText(labels[i].message, 0, 20);
-      texture1.needsUpdate = true;
-      console.log("move sprite");
-      sprite1.position.set(labels[i].x, labels[i].y, -200);
-    }else{
-      context1.fillText("", 0, 20);
-      texture1.needsUpdate = true;
-    }
+  // update the mouse variable
+  mouse.x =  event.clientX; 
+  mouse.y = -  event.clientY;
+}
+
+function update (){
+  console.log(mouse.x);
+  if (between(mouse.x, 500, 800)){
+    sprite1.visible = true;
+  }else{
+    sprite1.visible = false;
   }
+
 }
 
+// function onDocumentMouseMove(event){
+//   mouse.x = event.clientX;
+//   mouse.y = event.clientY;
+//   console.log(mouse);
+//   for(i=0; i<labels.length; i++){
+//     minX = labels[i].center.x - labels[i].range.x;
+//     minY = labels[i].center.y - labels[i].range.y;
+//     maxX = labels[i].center.x + labels[i].range.x;
+//     maxY = labels[i].center.y + labels[i].range.y;
+//     if (between(mouse.x, minX, maxX) && between(mouse.y, minY, maxY)){
+//       context1.fillStyle = "rgba(255,255,255,0.95)";
+//       context1.fillText(labels[i].message, 0, 20);
+//       texture1.needsUpdate = true;
+//       console.log("move sprite");
+//       sprite1.position.set(labels[i].x, labels[i].y, -200);
+//     }else{
+//       context1.fillText("", 0, 20);
+//       texture1.needsUpdate = true;
+//     }
+//   }
+// }
+function animate(t) {
+    update();
+    camera.position.set(
+      Math.sin(t/1500)*300, 150, Math.cos(t/1500)*300);
+    renderer.clear();
+    camera.lookAt(scene.position);
+    renderer.render(scene, camera);
+
+  window.requestAnimationFrame(animate, renderer.domElement);
+};
+
+animate(new Date().getTime());
 
 
- // Renders the scene and updates the render as needed.
-function animate() {
-  // Read more about requestAnimationFrame at http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
-  requestAnimationFrame(animate);
 
-  // Render the scene.
-  renderer.render(scene, camera);
-  controls.update();
-}
+//  // Renders the scene and updates the render as needed.
+// function animate() {
+//   // Read more about requestAnimationFrame at http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+//   requestAnimationFrame(animate);
+
+//   // Render the scene.
+//   renderer.render(scene, camera);
+//   controls.update();
+// }
